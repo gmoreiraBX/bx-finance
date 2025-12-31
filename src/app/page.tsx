@@ -1,16 +1,24 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function HomePage() {
   const { data: session } = authClient.useSession();
+  const router = useRouter();
 
-  if (!session) return <a href="/login">Entrar</a>;
+  useEffect(() => {
+    if (session?.user) {
+      router.replace("/dashboard");
+    }
+  }, [router, session?.user]);
 
   return (
-    <div className="p-6">
-      <h1>Bem-vindo, {session.user.email}</h1>
-      <button onClick={() => authClient.signOut()}>Sair</button>
+    <div className="min-h-screen flex items-center justify-center">
+      <a href="/login" className="text-blue-600 underline">
+        Entrar
+      </a>
     </div>
   );
 }

@@ -1,0 +1,39 @@
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const tenantId = searchParams.get("tenantId");
+
+  if (!tenantId) {
+    return NextResponse.json(
+      { error: "tenantId is required" },
+      { status: 400 }
+    );
+  }
+
+  const bankAccounts = await prisma.bankAccount.findMany({
+    where: { tenantId },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return NextResponse.json({ bankAccounts });
+}
+
+export async function POST(request: Request) {
+  const body = await request.json();
+  const { tenantId, nickname } = body ?? {};
+
+  if (!tenantId || !nickname) {
+    return NextResponse.json(
+      { error: "tenantId and nickname are required" },
+      { status: 400 }
+    );
+  }
+
+  const bankAccount = await prisma.bankAccount.create({
+    data: { tenantId, nickname },
+  });
+
+  return NextResponse.json({ bankAccount }, { status: 201 });
+}

@@ -4,18 +4,20 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const { data, error } = await authClient.signIn.email(
+    const { data, error } = await authClient.signUp.email(
       {
         email,
         password,
+        name,
         callbackURL: "/dashboard",
       },
       {
@@ -30,7 +32,6 @@ export default function LoginPage() {
         },
       }
     );
-    return { data, error };
   }
 
   return (
@@ -40,6 +41,14 @@ export default function LoginPage() {
         className="bg-white p-8 rounded-2xl shadow-lg w-96 space-y-4"
       >
         <h1 className="text-2xl font-semibold text-center">Entrar</h1>
+        <input
+          type="text"
+          placeholder="Seu nome aqui..."
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full border rounded-lg p-2"
+          required
+        />
         <input
           type="email"
           placeholder="seu@email.com"
@@ -59,7 +68,7 @@ export default function LoginPage() {
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
         >
-          Cadastrar
+          Entrar
         </button>
         <p className="text-sm text-center text-gray-500">{message}</p>
       </form>
